@@ -1,0 +1,17 @@
+{
+  "name": "dc-widget",
+  "version": "1.0.0",
+  "description": "Push Last.fm listening stats to a Discord profile widget",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "sync": "node --env-file-if-exists=.env src/sync.js"
+  },
+  "dependencies": {
+    "@discordjs/rest": "^2.6.3",
+    "discord-api-types": "^0.38.56"
+  }
+}
