@@ -21,13 +21,13 @@ const HOUR = 60 * MINUTE;
  * shows minutes rather than a misleading "0.1 jam".
  */
 export function formatListenTime(ms) {
-    if (!Number.isFinite(ms) || ms <= 0) return "≈ 0 mnt";
+    if (!Number.isFinite(ms) || ms <= 0) return "≈ 0 minutes";
 
-    if (ms < HOUR) return `≈ ${Math.max(1, Math.round(ms / MINUTE))} mnt`;
+    if (ms < HOUR) return `≈ ${Math.max(1, Math.round(ms / MINUTE))} minutes`;
 
     const hours = ms / HOUR;
-    if (hours < 100) return `≈ ${hours.toFixed(1).replace(/\.0$/, "")} j`;
-    return `≈ ${Math.round(hours).toLocaleString("en-US")} j`;
+    if (hours < 100) return `≈ ${hours.toFixed(1).replace(/\.0$/, "")} Hours`;
+    return `≈ ${Math.round(hours).toLocaleString("en-US")} Hours`;
 }
 
 export function formatCount(value) {
