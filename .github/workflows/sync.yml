@@ -1,0 +1,53 @@
+name: sync-widget
+
+on:
+  schedule:
+    # Tiap jam. Cron GitHub Actions pakai UTC dan penuh sesak di menit 0,
+    # jadi pakai offset biar delay antreannya lebih kecil.
+    - cron: "23 * * * *"
+  # Tombol "Run workflow" manual, buat testing.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Cegah dua run numpuk kalau run sebelumnya molor.
+concurrency:
+  group: sync-widget
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # durations.json di-cache antar run (runner-nya ephemeral). Key unik per
+      # run + restore-keys prefix = tiap run nyimpen snapshot terbaru.
+      - uses: actions/cache@v4
+        with:
+          path: data
+          key: durations-${{ github.run_id }}
+          restore-keys: |
+            durations-
+
+      - name: Sync widget
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+          DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
+          # Identity key yang menempel di akun — harus tetap 0, jangan diubah.
+          PROVIDER_ISSUED_USER_ID: "0"
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_USER: ${{ secrets.LASTFM_USER }}
+          WIDGET_TITLE: ${{ secrets.WIDGET_TITLE }}
+          WIDGET_IMAGE_URL: ${{ secrets.WIDGET_IMAGE_URL }}
+        run: npm run sync
